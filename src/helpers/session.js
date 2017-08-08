@@ -25,12 +25,16 @@ const onRequestFailed = (exception) => {
 };
 
 const onRequestSuccess = (response) => {
-    const tokens = response.tokens.reduce((prev, item) => ({
-        ...prev,
-        [item.type]: item,
-    }), {});
-    store.dispatch(sessionActions.update({ tokens, user: response.user }));
-    setSessionTimeout(tokens.access.expiresIn);
+    if(response.ok && !response.data.hasOwnProperty('errors')) {
+        const tokens = response.tokens.reduce((prev, item) => ({
+            ...prev,
+            [item.type]: item,
+        }), {});
+        store.dispatch(sessionActions.update({ tokens, user: response.user }));
+        setSessionTimeout(tokens.access.expiresIn);
+    } else {
+        return response.data.errors;
+    }
 };
 
 export const refreshToken = () => {

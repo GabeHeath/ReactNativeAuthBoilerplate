@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import { NavigationActions } from 'react-navigation'
 import dismissKeyboard from 'react-native/Libraries/Utilities/dismissKeyboard';
 import { StyleSheet } from 'react-native';
 import { Button, Container, Input, Icon, InputGroup, Spinner, Text, Title, View } from 'native-base';
@@ -38,6 +39,13 @@ const styles = StyleSheet.create({
     },
 });
 
+const authenticatedMainReset = NavigationActions.reset({
+    index: 0,
+    actions: [
+        NavigationActions.navigate({ routeName: 'AuthenticatedMain'})
+    ]
+});
+
 export default class Register extends Component {
     constructor(props) {
         super(props);
@@ -67,9 +75,22 @@ export default class Register extends Component {
             .then((response) => {
                 if(response.ok && !response.data.hasOwnProperty('errors')) {
                     session.authenticate(email, password)
-                        .then(() => {
-                            this.setState(this.initialState);
-                            this.props.navigation.navigate('AuthenticatedMain');
+                        .then((errors) => {
+                            if(errors) {
+                                // Displays only the first error message
+                                const error = api.exceptionExtractError(errors);
+                                const newState = {
+                                    isLoading: false,
+                                    ...(error ? { error } : {}),
+                                };
+                                this.setState(newState);
+                            } else {
+                                this.setState(this.initialState);
+                                this.props.navigation.dispatch(authenticatedMainReset);
+                            }
+                        })
+                        .catch((exception) => {
+                            throw exception;
                         });
                 } else {
                     // Displays only the first error message
@@ -82,7 +103,7 @@ export default class Register extends Component {
                 }
             })
             .catch((exception) => {
-               console.error(exception);
+               throw exception;
             });
     }
 

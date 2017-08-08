@@ -1,4 +1,3 @@
-import fetchival from 'fetchival';
 import _ from 'lodash';
 
 import { getSession } from '../helpers/session';
