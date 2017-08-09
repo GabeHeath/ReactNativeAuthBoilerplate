@@ -12,7 +12,4 @@ export const authenticate = (email, password) => fetchApi(endPoints.authenticate
     Authorization: `Basic ${new Buffer(`${email}:${password}`).toString('base64')}`,
 });
 
-export const refresh = (token, user) => fetchApi(endPoints.refresh, { token, user }, 'post', {
-    'Client-ID': apiConfig.clientId,
-    Authorization: null,
-});
+export const refresh = (token) => fetchApi(endPoints.refresh, { token: {refresh: token} }, 'post');
