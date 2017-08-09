@@ -52,8 +52,8 @@ export default class Login extends Component {
         this.initialState = {
             isLoading: false,
             error: null,
-            email: 'user1@facebook.com',
-            password: '12345678',
+            email: 'g@g.com',
+            password: 'test',
         };
         this.state = this.initialState;
     }

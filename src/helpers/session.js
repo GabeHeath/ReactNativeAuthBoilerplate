@@ -2,6 +2,7 @@ import store from '../store';
 import * as api from '../api/session';
 import * as sessionActions from '../actions/session';
 import { initialState } from '../reducers/services/session';
+import jwtDecode from 'jwt-decode';
 
 const SESSION_TIMEOUT_THRESHOLD = 300; // Will refresh the access token 5 minutes before it expires
 
@@ -26,12 +27,10 @@ const onRequestFailed = (exception) => {
 
 const onRequestSuccess = (response) => {
     if(response.ok && !response.data.hasOwnProperty('errors')) {
-        const tokens = response.tokens.reduce((prev, item) => ({
-            ...prev,
-            [item.type]: item,
-        }), {});
-        store.dispatch(sessionActions.update({ tokens, user: response.user }));
-        setSessionTimeout(tokens.access.expiresIn);
+        const tokens = response.data.tokens;
+        store.dispatch(sessionActions.update({ tokens }));
+        const expire_in = jwtDecode(tokens.access).expire_in;
+        setSessionTimeout(expire_in);
     } else {
         return response.data.errors;
     }
@@ -40,11 +39,11 @@ const onRequestSuccess = (response) => {
 export const refreshToken = () => {
     const session = getSession();
 
-    if (!session.tokens.refresh.value || !session.user.id) {
+    if (!session.tokens.refresh) {
         return Promise.reject();
     }
 
-    return api.refresh(session.tokens.refresh, session.user)
+    return api.refresh(session.tokens.refresh)
         .then(onRequestSuccess)
         .catch(onRequestFailed);
 };

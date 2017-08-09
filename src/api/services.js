@@ -9,7 +9,7 @@ export const exceptionExtractError = (errors) => {
 };
 
 export const fetchApi = (endPoint, payload = {}, method = 'get', headers = {}) => {
-    const accessToken = getSession().tokens.access.value;
+    const accessToken = getSession().tokens.access;
     return fetch(`${apiConfig.url}${endPoint}`, {
         method: method,
         headers: _.pickBy({
