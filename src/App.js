@@ -36,8 +36,12 @@ export default class App extends Component {
     }
 
     autoLogin() {
-        session.refreshToken().then(() => {
-            this.setState({ initialRoute: 'AuthenticatedMain' });
+        session.refreshToken().then((response) => {
+            if(response.ok && !response.data.hasOwnProperty('errors')) {
+                this.setState({initialRoute: 'AuthenticatedMain'});
+            } else {
+                this.setState({ initialRoute: 'Login' });
+            }
         }).catch(() => {
             this.setState({ initialRoute: 'Login' });
         });

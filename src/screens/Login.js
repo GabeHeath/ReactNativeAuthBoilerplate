@@ -66,8 +66,11 @@ export default class Login extends Component {
         dismissKeyboard();
 
         session.authenticate(this.state.email, this.state.password)
-            .then((errors) => {
-                if(errors) {
+            .then((response) => {
+                if(response.ok && !response.data.hasOwnProperty('errors')) {
+                    this.setState(this.initialState);
+                    this.props.navigation.dispatch(authenticatedMainReset);
+                } else {
                     // Displays only the first error message
                     const error = api.exceptionExtractError(errors);
                     const newState = {
@@ -75,9 +78,6 @@ export default class Login extends Component {
                         ...(error ? { error } : {}),
                     };
                     this.setState(newState);
-                } else {
-                    this.setState(this.initialState);
-                    this.props.navigation.dispatch(authenticatedMainReset);
                 }
             })
             .catch((exception) => {

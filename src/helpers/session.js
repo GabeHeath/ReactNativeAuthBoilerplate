@@ -31,8 +31,10 @@ const onRequestSuccess = (response) => {
         store.dispatch(sessionActions.update({ tokens }));
         const expire_in = jwtDecode(tokens.access).expire_in;
         setSessionTimeout(expire_in);
+        return response; //Good response
     } else {
-        return response.data.errors;
+        clearSession();
+        return response; //Bad response
     }
 };
 

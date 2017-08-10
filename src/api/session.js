@@ -1,6 +1,5 @@
 import { Buffer } from 'buffer';
 import { fetchApi } from '../api/services';
-import apiConfig from './config';
 
 const endPoints = {
     authenticate: '/users/auth',
@@ -13,3 +12,5 @@ export const authenticate = (email, password) => fetchApi(endPoints.authenticate
 });
 
 export const refresh = (token) => fetchApi(endPoints.refresh, { token: {refresh: token} }, 'post');
+
+export const revoke = (token) => fetchApi(endPoints.revoke, { token: {refresh: token} }, 'post');
