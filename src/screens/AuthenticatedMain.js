@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 import { NavigationActions } from 'react-navigation'
 import { Button, Container, Input, Icon, InputGroup, Spinner, Text, Title, View } from 'native-base';
 import * as sessionApi from '../api/session';
+import { getSession } from "../helpers/session"
 
 const styles = StyleSheet.create({
     container: {
@@ -33,9 +34,17 @@ const logoutReset = NavigationActions.reset({
 
 export default class AuthenticatedMain extends Component {
 
+    onPressEmailUpdate() {
+        alert('Email');
+    }
+
     onPressLogout() {
-        sessionApi.revoke().then(() => {
+        const session = getSession();
+        sessionApi.revoke(session.tokens.refresh).then(() => {
             this.props.navigation.dispatch(logoutReset);
+        })
+        .catch((exception) => {
+            throw exception;
         });
     }
 
@@ -43,12 +52,20 @@ export default class AuthenticatedMain extends Component {
         return (
             <Container>
                 <View style={styles.container}>
+                    <Text>This is the Authenticated Home Screen</Text>
                     <Button block danger
                             style={styles.button}
                             onPress={() => this.onPressLogout()}
                     >
                         <Icon name="ios-power" />
                         <Text>Log Out</Text>
+                    </Button>
+                    <Button block success
+                            style={styles.button}
+                            onPress={() => this.onPressEmailUpdate()}
+                    >
+                        <Icon name="ios-person" />
+                        <Text>Change Email Address</Text>
                     </Button>
                 </View>
             </Container>
